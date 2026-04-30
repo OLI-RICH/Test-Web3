@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Event images are publicly viewable" ON storage.objects;
