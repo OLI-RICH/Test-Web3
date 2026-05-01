@@ -1,0 +1,99 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== ENTITÉS PRINCIPALES ====================
+
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  location    String
+  imageUrl    String?
+  status      EventStatus @default(PUBLISHED)
+
+  sessions    Session[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("events")
+}
+
+model Room {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  capacity  Int?
+
+  sessions  Session[]
+
+  @@map("rooms")
+}
+
+model Speaker {
+  id          String   @id @default(cuid())
+  name        String
+  photoUrl    String?
+  bio         String?
+  socialLinks Json?    // { linkedin, twitter, website, github }
+
+  sessions    SessionSpeaker[]
+
+  @@map("speakers")
+}
+
+model Session {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+
+  eventId     String
+  roomId      String
+
+  event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  room        Room      @relation(fields: [roomId], references: [id])
+
+  speakers    SessionSpeaker[]
+  questions   Question[]
+
+  @@map("sessions")
+}
+
+model SessionSpeaker {
+  sessionId   String
+  speakerId   String
+
+  session     Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  speaker     Speaker  @relation(fields: [speakerId], references: [id], onDelete: Cascade)
+
+  @@id([sessionId, speakerId])
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  content     String
+  author      String?  // optionnel (anonyme possible)
+  votes       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  sessionId   String
+  session     Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("questions")
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
