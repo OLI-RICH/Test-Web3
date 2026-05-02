@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:italic&family=Inter:wght@400;700;900&display=swap');
+
 :root {
   --bg-light-gray: #f8f9fa; /* Fond catalogue très clair */
 }
@@ -77,4 +79,18 @@
 
 main {
   @apply pt-0 !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+  background-color: #000;
+}
+
+.font-serif {
+  font-family: 'DM Serif Display', serif;
 }

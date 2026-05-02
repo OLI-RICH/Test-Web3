@@ -37,24 +37,21 @@
 //   );
 // }
 
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer"; // Import du nouveau composant
-import Providers from "@/components/Providers";
-import "./globals.css";
+
+import './globals.css'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr">
-      <body className="antialiased flex flex-col min-h-screen">
-        <Providers>
-          <Navigation />
-          {/* flex-grow permet au contenu de pousser le footer vers le bas si la page est courte */}
-          <main className="pt-0 flex-grow">
-            {children}
-          </main>
-          <Footer />
-        </Providers>
+    <html lang="fr" className="scroll-smooth">
+      <body className="antialiased bg-black min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-grow">
+          {children}
+        </div>
+        <Footer />
       </body>
     </html>
-  );
+  )
 }

@@ -1,76 +1,103 @@
+// "use client";
+// import React from "react";
+// import Link from "next/link";
+
+// export default function Footer() {
+//   const currentYear = new Date().getFullYear();
+
+//   return (
+//     <footer className="bg-[#0a0a0a] border-t border-white/5 py-12 px-6">
+//       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+        
+//         {/* À GAUCHE */}
+//         <div className="max-w-xs">
+//           <Link href="/#events-section" className="group">
+//             <span className="text-white font-black italic text-xl tracking-tighter">
+//               EventSync<span className="text-[#2ecc71]">.</span>
+//             </span>
+//           </Link>
+//           <p className="text-gray-500 text-sm mt-2 leading-relaxed">
+//             La plateforme de gestion d'événements en temps réel pour les organisateurs et participants.
+//           </p>
+//         </div>
+
+//         {/* À DROITE */}
+//         <div className="flex flex-col items-start md:items-end text-left md:text-right">
+//           <p className="text-gray-400 text-[11px] uppercase tracking-widest font-bold">
+//             © {currentYear} EventSync. Tous droits réservés.
+//           </p>
+//           <p className="text-gray-600 text-[10px] uppercase tracking-widest mt-1">
+//             Stockage local — vos données restent sur votre machine
+//           </p>
+//         </div>
+
+//       </div>
+//     </footer>
+//   );
+// }
+
+
 "use client";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Calendar } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
+  const pathname = usePathname();
+  const [isAdmin, setIsAdmin] = useState(false);
   const currentYear = new Date().getFullYear();
 
+  // On vérifie si l'utilisateur est connecté et sur une page admin (ou favorites en admin)
+  useEffect(() => {
+    const checkAuth = () => {
+      const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+      setIsAdmin(loggedIn);
+    };
+
+    checkAuth();
+    window.addEventListener("loginStateChange", checkAuth);
+    return () => window.removeEventListener("loginStateChange", checkAuth);
+  }, []);
+
+  // On applique le décalage si on est en mode admin sur les pages concernées
+  const isControlPanel = isAdmin && (pathname?.startsWith("/admin") || pathname === "/favorites");
+
   return (
-    <footer className="bg-[#0a0a0a] border-t border-white/5 pt-20 pb-10 px-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
-          
-          {/* COLONNE LOGO & DESCRIPTION */}
-          <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-3 mb-6 group w-fit">
-              <div className="w-10 h-10 bg-[#2ecc71] rounded-xl flex items-center justify-center shadow-lg shadow-green-500/20 group-hover:rotate-6 transition-transform">
-                <Calendar className="w-5 h-5 text-black" />
-              </div>
-              <span className="font-black text-2xl tracking-tighter text-white">EventSync</span>
-            </Link>
-            <p className="text-gray-500 text-sm max-w-xs leading-relaxed">
-              La plateforme de gestion d'événements en temps réel pour les organisateurs et participants.
-            </p>
-          </div>
-
-          {/* COLONNE NAVIGATION */}
-          <div>
-            <h4 className="text-white font-bold text-sm mb-6 uppercase tracking-widest">Navigation</h4>
-            <ul className="space-y-4">
-              <li>
-                <Link href="/" className="text-gray-500 hover:text-[#2ecc71] text-sm transition-colors">
-                  Événements
-                </Link>
-              </li>
-              <li>
-                <Link href="/favorites" className="text-gray-500 hover:text-[#2ecc71] text-sm transition-colors">
-                  Mon Planning
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* COLONNE ADMIN */}
-          <div>
-            <h4 className="text-white font-bold text-sm mb-6 uppercase tracking-widest">Admin</h4>
-            <ul className="space-y-4">
-              <li>
-                <Link href="/admin/dashboard" className="text-gray-500 hover:text-[#2ecc71] text-sm transition-colors">
-                  Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin/login" className="text-gray-500 hover:text-[#2ecc71] text-sm transition-colors">
-                  Connexion
-                </Link>
-              </li>
-            </ul>
-          </div>
+    <footer className={`bg-[#0a0a0a] border-t border-white/5 py-12 px-8 transition-all duration-300 ${isControlPanel ? "ml-72" : "ml-0"}`}>
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+        
+        {/* SECTION GAUCHE : Branding */}
+        <div className="max-w-xs">
+          <Link href="/" className="group">
+            <span className="text-white font-black italic text-xl tracking-tighter">
+              EventSync<span className="text-[#2ecc71]">.</span>
+            </span>
+          </Link>
+          <p className="text-gray-500 text-xs mt-2 leading-relaxed uppercase tracking-wider font-bold">
+            Gestion d'événements & PostgreSQL
+          </p>
         </div>
 
-        {/* BARRE INFÉRIEURE */}
-        <div className="pt-10 border-t border-white/5 flex flex-col md:row justify-between items-center gap-6">
-          <p className="text-gray-600 text-[11px] uppercase tracking-widest font-medium">
-            © {currentYear} EventSync. Tous droits réservés.
+        {/* SECTION DROITE : Copyright & Info */}
+        <div className="flex flex-col items-start md:items-end text-left md:text-right">
+          <p className="text-gray-400 text-[10px] uppercase tracking-[0.2em] font-black">
+            © {currentYear} TOUS DROITS RÉSERVÉS
           </p>
           
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#2ecc71] animate-pulse"></div>
-            <p className="text-gray-600 text-[11px] uppercase tracking-widest font-medium">
-              Stockage local — vos données restent sur votre machine
+          {isControlPanel ? (
+            <div className="flex items-center gap-2 mt-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#2ecc71]"></div>
+              <span className="text-[#2ecc71] text-[9px] font-black uppercase tracking-widest">
+                Session Administrateur Active
+              </span>
+            </div>
+          ) : (
+            <p className="text-gray-600 text-[9px] uppercase tracking-widest mt-1 font-bold">
+              HEI Madagascar — Projet L2 Informatique
             </p>
-          </div>
+          )}
         </div>
+
       </div>
     </footer>
   );
