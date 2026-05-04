@@ -12,11 +12,11 @@ async function main() {
   await prisma.session.deleteMany({});
   await prisma.speaker.deleteMany({});
   await prisma.event.deleteMany({});
-  await prisma.user.deleteMany({});
+  await prisma.admin.deleteMany({});
 
   // 1. Admin
   const hashedPassword = await bcrypt.hash("admin123", 10);
-  await prisma.user.upsert({
+  await prisma.admin.upsert({
     where: { email: "admin@eventsync.com" },
     update: {},
     create: {
